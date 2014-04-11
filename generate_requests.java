@@ -41,8 +41,8 @@ public class generate_requests implements Runnable {
       float seconds = (System.nanoTime() - startTime) / 1000000000L;
       countSemaphore.acquire();
       ++count;
-      countSemaphore.release();
       System.out.println("Request " + count + " responded after " + seconds);
+      countSemaphore.release();
     } catch (IOException          e) { /* no op */ }
       catch (InterruptedException e) { countSemaphore.release(); }
   }
