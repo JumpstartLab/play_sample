@@ -1,15 +1,9 @@
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
 import java.io.IOException;
-// import java.util.concurrent.Semaphore;
-
-
-import javax.net.ssl.HttpsURLConnection;
+import java.util.concurrent.Semaphore;
 
 public class generate_requests implements Runnable {
   public static void main(String[] args) throws Exception {
@@ -27,12 +21,12 @@ public class generate_requests implements Runnable {
   private URL       url;
   private int       count;
   private long      startTime;
-  // private Semaphore countSemaphore;
+  private Semaphore countSemaphore;
 
 
   public generate_requests(URL url) {
     this.count          = 0;
-    // this.countSemaphore = new Semaphore(-1);
+    this.countSemaphore = new Semaphore(1);
     this.startTime      = System.nanoTime();
     this.url            = url;
   }
@@ -45,17 +39,11 @@ public class generate_requests implements Runnable {
         System.exit(1);
       }
       float seconds = (System.nanoTime() - startTime) / 1000000000L;
+      countSemaphore.acquire();
+      ++count;
+      countSemaphore.release();
       System.out.println("Request " + count + " responded after " + seconds);
-      // try {
-      //   countSemaphore.acquire();
-         ++count;
-      // } catch (InterruptedException e) {
-      //   // no op
-      // } finally {
-      //   countSemaphore.release();
-      // }
-    } catch (IOException e) {
-      // no op
-    }
+    } catch (IOException          e) { /* no op */ }
+      catch (InterruptedException e) { countSemaphore.release(); }
   }
 }
