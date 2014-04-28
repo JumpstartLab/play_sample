@@ -89,6 +89,19 @@ public class Application extends Controller {
             createForm.render(computerForm)
         );
     }
+
+    /**
+     * Display the 'new computer form'.
+     */
+    @Transactional(readOnly=true)
+    public static Result slowQuery() throws InterruptedException{
+        System.out.println("Sleeping for 5 seconds.");
+        Thread.sleep(5000);
+        System.out.println("Sleeping over.");
+        return ok(
+            "Hello, slow request."
+        );
+    }    
     
     /**
      * Handle the 'new computer form' submission 
